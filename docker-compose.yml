@@ -13,7 +13,8 @@ services:
   web:
     build: .
     restart: always
-    command: ["/usr/bin/entrypoint.sh"] # L'entrée par défaut dans le Dockerfile est le CMD
+    entrypoint: ["/usr/bin/entrypoint.sh"]
+    command: ["bundle", "exec", "rails", "server", "-b", "0.0.0.0", "-p", "3004"]
     volumes:
       - .:/app
       - profile_images:/app/storage # Volume persistant pour Active Storage!
