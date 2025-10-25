@@ -6,6 +6,7 @@ services:
       POSTGRES_USER: ${DB_USERNAME}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: ${DB_NAME_PRODUCTION}
+      SECRET_KEY_BASE: ${SECRET_KEY_BASE}
     volumes:
       - postgres_data:/var/lib/postgresql/data # Volume persistant pour la base de données
 
