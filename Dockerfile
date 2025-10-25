@@ -36,7 +36,7 @@ COPY --from=builder /usr/local/bundle /usr/local/bundle
 COPY . .
 
 # Expose port
-EXPOSE 3002
+EXPOSE 3004
 
 # Entrypoint script (will be created in step 4)
 COPY entrypoint.sh /usr/bin/
@@ -44,4 +44,4 @@ RUN chmod +x /usr/bin/entrypoint.sh
 ENTRYPOINT ["entrypoint.sh"]
 
 # Default command to run the Rails server
-CMD ["bundle", "exec", "rails", "s", "-p", "3000", "-b", "0.0.0.0"]
+CMD ["bundle", "exec", "rails", "s", "-p", "3004", "-b", "0.0.0.0"]

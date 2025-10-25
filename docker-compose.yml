@@ -17,7 +17,7 @@ services:
       - .:/app
       - profile_images:/app/storage # Volume persistant pour Active Storage!
     ports:
-      - "3002:3002"
+      - "3004:3004"
     depends_on:
       - db
     environment:
