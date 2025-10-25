@@ -7,4 +7,7 @@ Rails.application.routes.draw do
 
   # Defines the root path route ("/")
   # root "posts#index"
+
+  # Une route de test pour vérifier que l'API est vivante
+  get "/", to: proc { [200, {}, ["OK"]] }
 end
