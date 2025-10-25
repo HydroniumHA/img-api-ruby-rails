@@ -1,5 +1,5 @@
 # Stage 1: Build Image (pour les dépendances)
-FROM ruby:3.3.0 as builder
+FROM ruby:3.4.7 as builder
 
 # Install system dependencies
 RUN apt-get update -qq && apt-get install -y \
@@ -16,7 +16,7 @@ COPY Gemfile Gemfile.lock ./
 RUN bundle install --jobs 4
 
 # Stage 2: Final Image
-FROM ruby:3.3.0-slim
+FROM ruby:3.4.7-slim
 
 # Install system dependencies (slim version needs a minimal set)
 RUN apt-get update -qq && apt-get install -y \
