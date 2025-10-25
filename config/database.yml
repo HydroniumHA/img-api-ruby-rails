@@ -98,3 +98,9 @@ queue:
     # Réutilise la même URL de connexion que la base de données principale
     <<: *default
     url: <%= ENV['DATABASE_URL'] %>
+
+cache:
+  production:
+    # Réutilise la même URL de connexion que la base de données principale
+    <<: *default
+    url: <%= ENV['DATABASE_URL'] %>
