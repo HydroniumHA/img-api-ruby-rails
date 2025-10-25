@@ -1,0 +1,31 @@
+services:
+  db:
+    image: postgres:16-alpine # Image PostgreSQL légère et stable
+    restart: always
+    environment:
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME_PRODUCTION}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data # Volume persistant pour la base de données
+
+  web:
+    build: .
+    restart: always
+    command: ["/usr/bin/entrypoint.sh"] # L'entrée par défaut dans le Dockerfile est le CMD
+    volumes:
+      - .:/app
+      - profile_images:/app/storage # Volume persistant pour Active Storage!
+    ports:
+      - "3002:3002"
+    depends_on:
+      - db
+    environment:
+      RAILS_ENV: production
+      DATABASE_URL: postgres://${DB_USERNAME}:${DB_PASSWORD}@db:5432/${DB_NAME_PRODUCTION}
+      # Ajoutez d'autres variables d'environnement comme RAILS_MASTER_KEY
+      # RAILS_MASTER_KEY: ${RAILS_MASTER_KEY}
+
+volumes:
+  postgres_data:
+  profile_images: # Volume nommé pour la persistance des images

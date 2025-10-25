@@ -85,20 +85,5 @@ test:
 # for a full overview on how database connection configuration can be specified.
 #
 production:
-  primary: &primary_production
-    <<: *default
-    database: img_api_ruby_rails_production
-    username: img_api_ruby_rails
-    password: <%= ENV["IMG_API_RUBY_RAILS_DATABASE_PASSWORD"] %>
-  cache:
-    <<: *primary_production
-    database: img_api_ruby_rails_production_cache
-    migrations_paths: db/cache_migrate
-  queue:
-    <<: *primary_production
-    database: img_api_ruby_rails_production_queue
-    migrations_paths: db/queue_migrate
-  cable:
-    <<: *primary_production
-    database: img_api_ruby_rails_production_cable
-    migrations_paths: db/cable_migrate
+  <<: *default
+  url: <%= ENV['DATABASE_URL'] %> # Utilise la variable DATABASE_URL de docker-compose

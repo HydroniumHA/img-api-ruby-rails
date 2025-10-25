@@ -1,78 +1,47 @@
-# syntax=docker/dockerfile:1
-# check=error=true
+# Stage 1: Build Image (pour les dépendances)
+FROM ruby:3.3.0 as builder
 
-# This Dockerfile is designed for production, not development. Use with Kamal or build'n'run by hand:
-# docker build -t img_api_ruby_rails .
-# docker run -d -p 80:80 -e RAILS_MASTER_KEY=<value from config/master.key> --name img_api_ruby_rails img_api_ruby_rails
+# Install system dependencies
+RUN apt-get update -qq && apt-get install -y \
+  build-essential \
+  libpq-dev \
+  postgresql-client \
+  && rm -rf /var/lib/apt/lists/*
 
-# For a containerized dev environment, see Dev Containers: https://guides.rubyonrails.org/getting_started_with_devcontainer.html
+# Set up working directory
+WORKDIR /app
 
-# Make sure RUBY_VERSION matches the Ruby version in .ruby-version
-ARG RUBY_VERSION=3.4.7
-FROM docker.io/library/ruby:$RUBY_VERSION-slim AS base
+# Copy Gemfile and install dependencies
+COPY Gemfile Gemfile.lock ./
+RUN bundle install --jobs 4
 
-# Rails app lives here
-WORKDIR /rails
+# Stage 2: Final Image
+FROM ruby:3.3.0-slim
 
-# Install base packages
-RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y curl libjemalloc2 libvips postgresql-client && \
-    ln -s /usr/lib/$(uname -m)-linux-gnu/libjemalloc.so.2 /usr/local/lib/libjemalloc.so && \
-    rm -rf /var/lib/apt/lists /var/cache/apt/archives
+# Install system dependencies (slim version needs a minimal set)
+RUN apt-get update -qq && apt-get install -y \
+  postgresql-client \
+  # Add other necessary libs for Active Storage, e.g., for image processing if you use it (like libvips or imagemagick)
+  # libvips is often required for Active Storage variants
+  libvips-dev \
+  # Cleanup
+  && rm -rf /var/lib/apt/lists/*
 
-# Set production environment variables and enable jemalloc for reduced memory usage and latency.
-ENV RAILS_ENV="production" \
-    BUNDLE_DEPLOYMENT="1" \
-    BUNDLE_PATH="/usr/local/bundle" \
-    BUNDLE_WITHOUT="development" \
-    LD_PRELOAD="/usr/local/lib/libjemalloc.so"
+WORKDIR /app
 
-# Throw-away build stage to reduce size of final image
-FROM base AS build
+# Copy built gems from the builder stage
+COPY --from=builder /usr/local/bundle /usr/local/bundle
 
-# Install packages needed to build gems
-RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y build-essential git libpq-dev libyaml-dev pkg-config && \
-    rm -rf /var/lib/apt/lists /var/cache/apt/archives
-
-# Install application gems
-COPY Gemfile Gemfile.lock vendor ./
-
-RUN bundle install && \
-    rm -rf ~/.bundle/ "${BUNDLE_PATH}"/ruby/*/cache "${BUNDLE_PATH}"/ruby/*/bundler/gems/*/.git && \
-    # -j 1 disable parallel compilation to avoid a QEMU bug: https://github.com/rails/bootsnap/issues/495
-    bundle exec bootsnap precompile -j 1 --gemfile
-
-# Copy application code
+# Copy the rest of the application code
 COPY . .
 
-# Precompile bootsnap code for faster boot times.
-# -j 1 disable parallel compilation to avoid a QEMU bug: https://github.com/rails/bootsnap/issues/495
-RUN bundle exec bootsnap precompile -j 1 app/ lib/
+# Expose port
+EXPOSE 3002
 
-# Adjust binfiles to be executable on Linux
-RUN chmod +x bin/* && \
-    sed -i "s/\r$//g" bin/* && \
-    sed -i 's/ruby\.exe$/ruby/' bin/*
+# Entrypoint script (will be created in step 4)
+COPY entrypoint.sh /usr/bin/
+RUN chmod +x /usr/bin/entrypoint.sh
+ENTRYPOINT ["entrypoint.sh"]
 
-
-
-
-# Final stage for app image
-FROM base
-
-# Run and own only the runtime files as a non-root user for security
-RUN groupadd --system --gid 1000 rails && \
-    useradd rails --uid 1000 --gid 1000 --create-home --shell /bin/bash
-USER 1000:1000
-
-# Copy built artifacts: gems, application
-COPY --chown=rails:rails --from=build "${BUNDLE_PATH}" "${BUNDLE_PATH}"
-COPY --chown=rails:rails --from=build /rails /rails
-
-# Entrypoint prepares the database.
-ENTRYPOINT ["/rails/bin/docker-entrypoint"]
-
-# Start server via Thruster by default, this can be overwritten at runtime
-EXPOSE 80
-CMD ["./bin/thrust", "./bin/rails", "server"]
+# Default command to run the Rails server
+CMD ["bundle", "exec", "rails", "s", "-p", "3000", "-b", "0.0.0.0"]
