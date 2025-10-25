@@ -92,3 +92,9 @@ cable:
   production:
     <<: *default
     url: <%= ENV['DATABASE_URL'] %>
+
+queue:
+  production:
+    # Réutilise la même URL de connexion que la base de données principale
+    <<: *default
+    url: <%= ENV['DATABASE_URL'] %>
