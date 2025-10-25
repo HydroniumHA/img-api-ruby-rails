@@ -87,3 +87,8 @@ test:
 production:
   <<: *default
   url: <%= ENV['DATABASE_URL'] %> # Utilise la variable DATABASE_URL de docker-compose
+
+cable:
+  production:
+    <<: *default
+    url: <%= ENV['DATABASE_URL'] %>
