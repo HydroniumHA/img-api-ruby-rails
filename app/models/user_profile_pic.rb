@@ -6,10 +6,13 @@ class UserProfilePic < ApplicationRecord
   # Validations pour l'identifiant unique de Firebase
   validates :firebase_uid, presence: true, uniqueness: true
 
-  # Validations pour l'image (exécution au moment de l'upload)
-  validates :picture, 
-            content_type: [:png, :jpg, :jpeg], # Types de fichiers autorisés
-            size: { less_than: 5.megabytes },   # Taille maximale du fichier (5 Mo)
-            # Cette validation ne s'exécute que si un fichier est attaché
-            if: -> { picture.attached? }
+  # Valide le type de contenu (MIME type)
+  validates_with ActiveStorage::Attached::ContentTypeValidator, 
+    attributes: :picture, 
+    in: %w[image/jpeg image/png image/jpg]
+    
+  # Valide la taille du fichier
+  validates_with ActiveStorage::Attached::SizeValidator, 
+    attributes: :picture, 
+    less_than: 5.megabytes
 end
