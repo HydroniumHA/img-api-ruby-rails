@@ -55,3 +55,13 @@ DB_NAME_PRODUCTION=image_manager_production
 # Clés de sécurité Rails
 SECRET_KEY_BASE=VOTRE_SECRET_KEY_DE_64_CARACTERES
 RAILS_MASTER_KEY=VOTRE_MASTER_KEY_DE_PRODUCTION
+```
+
+## 📧 Contact
+
+👤 [HydroniumHA]
+📧 [contact@hydronium.be]
+
+## 🔗 Lien du Projet
+
+👉 https://github.com/HydroniumHA/img-api-ruby-rails
