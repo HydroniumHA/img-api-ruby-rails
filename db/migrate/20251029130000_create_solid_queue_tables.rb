@@ -1,5 +1,4 @@
 # db/migrate/20251029130000_create_solid_queue_tables.rb
-require "solid_queue/migration"
 class CreateSolidQueueTables < SolidQueue::Migration[5.2]
   def change
     SolidQueue::Migration.all.each do |migration|

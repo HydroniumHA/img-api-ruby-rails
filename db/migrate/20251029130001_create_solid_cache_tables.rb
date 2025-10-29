@@ -1,5 +1,4 @@
 # db/migrate/20251029130001_create_solid_cache_tables.rb
-require "solid_cache/migration"
 class CreateSolidCacheTables < SolidCache::Migration[5.2]
   def change
     SolidCache::Migration.all.each do |migration|
