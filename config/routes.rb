@@ -10,4 +10,12 @@ Rails.application.routes.draw do
 
   # Une route de test pour vérifier que l'API est vivante
   get "/", to: proc { [200, {}, ["OK"]] }
+
+  # Définit les routes pour la ressource `profile_pictures`.
+  # param: :uid indique à Rails d'utiliser la partie variable de l'URL comme 'uid'.
+  # Only: définit les méthodes HTTP que nous gérons.
+  resources :profile_pictures, param: :uid, only: [:create, :show, :destroy]
+
+  # Active Storage nécessite des routes internes pour générer des URLs publiques,
+  # qui sont activées automatiquement par Rails/Active Storage
 end
