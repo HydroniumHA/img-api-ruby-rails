@@ -1,5 +1,4 @@
-require 'active_storage/content_type_validator' 
-require 'active_storage/size_validator'
+require 'active_storage/validators'
 
 class UserProfilePic < ApplicationRecord
   # Active Storage : Lie l'enregistrement de cette table (User Profile Pic)
