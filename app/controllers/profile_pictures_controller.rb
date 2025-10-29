@@ -50,6 +50,23 @@ class ProfilePicturesController < ApplicationController
     end
   end
 
+  # GET /profile_pictures
+  def index
+    # Récupère tous les enregistrements d'images
+    # Note : Le .with_attached_picture est important pour optimiser la requête SQL
+    @user_pics = UserProfilePic.with_attached_picture.all
+
+    # Construit la liste des objets avec l'UID et l'URL publique
+    image_list = @user_pics.map do |pic|
+      {
+        uid: pic.firebase_uid,
+        url: pic.picture.attached? ? rails_blob_url(pic.picture) : nil # Utilise nil si aucune image n'est attachée
+      }
+    end
+
+    render json: image_list, status: :ok
+  end
+
   private
 
   # Tente de trouver l'enregistrement UserProfilePic par l'UID

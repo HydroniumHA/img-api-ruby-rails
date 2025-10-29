@@ -14,7 +14,7 @@ Rails.application.routes.draw do
   # Définit les routes pour la ressource `profile_pictures`.
   # param: :uid indique à Rails d'utiliser la partie variable de l'URL comme 'uid'.
   # Only: définit les méthodes HTTP que nous gérons.
-  resources :profile_pictures, param: :uid, only: [:show, :destroy] do
+  resources :profile_pictures, param: :uid, only: [:show, :destroy, :index] do
     member do
       post :create # Crée la route POST /profile_pictures/:uid (qui mappe à #create)
     end
