@@ -1,6 +1,7 @@
-require 'active_storage/validators'
-
 class UserProfilePic < ApplicationRecord
+  # Inclure le module ActiveStorage::Validations pour rendre les validateurs disponibles
+  include ActiveStorage::Validations
+
   # Active Storage : Lie l'enregistrement de cette table (User Profile Pic)
   # à un seul fichier image binaire.
   has_one_attached :picture 
@@ -8,13 +9,8 @@ class UserProfilePic < ApplicationRecord
   # Validations pour l'identifiant unique de Firebase
   validates :firebase_uid, presence: true, uniqueness: true
 
-  # Valide le type de contenu (MIME type)
-  validates_with ActiveStorage::Attached::ContentTypeValidator, 
-    attributes: :picture, 
-    in: %w[image/jpeg image/png image/jpg]
-    
-  # Valide la taille du fichier
-  validates_with ActiveStorage::Attached::SizeValidator, 
-    attributes: :picture, 
-    less_than: 5.megabytes
+  # Valide
+  validates :picture, 
+    content_type: { in: %w[image/jpeg image/png image/jpg], message: 'doit être un JPEG ou PNG' },
+    size: { less_than: 5.megabytes, message: 'doit être inférieur à 5MB' }
 end
