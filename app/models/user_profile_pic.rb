@@ -1,7 +1,4 @@
 class UserProfilePic < ApplicationRecord
-  # Inclure le module ActiveStorage::Validations pour rendre les validateurs disponibles
-  include ActiveStorage::Validations
-
   # Active Storage : Lie l'enregistrement de cette table (User Profile Pic)
   # à un seul fichier image binaire.
   has_one_attached :picture 

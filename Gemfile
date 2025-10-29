@@ -49,5 +49,5 @@ group :development, :test do
   gem "rubocop-rails-omakase", require: false
 
   # Ajout de la gem pour les validateurs Active Storage (content_type et size)
-  gem 'active_storage_validations', '~> 1.1'
+  gem 'active_storage-validations'
 end
